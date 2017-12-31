@@ -1,0 +1,150 @@
+int song[] = {
+  220, 370, 370, 370, 370, 392, 440, 330, 0,
+  220, 330, 330, 330, 330, 370, 392, 370, 0,
+  294, 494, 494, 494, 494, 554, 587, 440, 392, 370, 0,
+  246, 392, 392, 392, 392, 440, 494, 440, 330, 0,
+
+  220, 370, 370, 370, 370, 392, 440, 330, 0,
+  220, 330, 330, 330, 330, 370, 392, 370, 0,
+  294, 494, 494, 494, 494, 554, 587, 440, 392, 370, 0,
+  246, 330, 330, 330, 370, 330, 294, 246, 294, 0,
+
+  294, 246, 0, 294, 494, 440, 0,
+  392, 370, 330, 330, 294, 330, 370, 0,
+  294, 494, 0,  554, 587, 440, 0,
+  294, 294, 494, 494, 554, 587, 655, 0,
+
+  370, 392, 440, 0, 294, 370, 392, 440, 0,
+  294, 294, 494, 494, 554, 587, 440, 0,
+  494, 554, 587, 587, 587, 554, 440, 494, 0,
+  392, 440, 494, 440, 392, 440, 330, 0,
+
+  370, 392, 440, 0, 294, 370, 392, 440, 0,
+  294, 294, 494, 494, 554, 587, 440, 0,
+  494, 554, 587, 587, 587, 554, 440, 494, 0,
+  392, 440, 494, 554, 554, 494, 554, 587, 0,
+
+  370, 392, 440, 0, 294, 370, 392, 440, 0,
+  294, 294, 494, 494, 554, 587, 440, 0,
+  494, 554, 587, 587, 587, 554, 440, 494, 0,
+  392, 440, 494, 554, 554, 494, 554, 587, 0,
+};
+
+float noteDurations[] = {
+  4, 2.666666, 8, 5.333333, 16, 5.333333, 16, 2, 4,
+  4, 2.666666, 8, 5.333333, 16, 5.333333, 16, 2, 4,
+  4, 2.666666, 8, 4, 12, 12, 12, 4, 4, 2.666666, 11,
+  8, 2.666666, 8, 4, 12, 12, 12, 4, 2, 8,
+
+  4, 2.666666, 8, 5.333333, 16, 5.333333, 16, 2, 4,
+  4, 2.666666, 8, 5.333333, 16, 5.333333, 16, 2, 4,
+  4, 2.666666, 8, 4, 12, 12, 12, 4, 4, 2.666666, 11,
+  8, 2.666666, 8, 4, 12, 12, 12, 4, 2, 8,
+
+  4, 2, 4, 8, 8, 2, 4,
+  8, 8, 2.666666, 8, 4, 4, 2, 4,
+  4, 2, 4, 8, 8, 2, 4,
+  8, 8, 2.666666, 8, 4, 4, 2, 4,
+
+  8, 8, 2, 8, 8, 8, 8, 2, 4,
+  8, 8, 1.6, 8, 8, 8, 2, 4,
+  8, 8, 8, 2, 8, 8, 8, 2, 4,
+  8, 8, 1.6, 8, 8, 8, 2, 4,
+
+  8, 8, 2, 8, 8, 8, 8, 2, 4,
+  8, 8, 1.6, 8, 8, 8, 2, 4,
+  8, 8, 8, 2, 8, 8, 8, 2, 4,
+  8, 8, 1, 4, 4, 8, 2.666, 1.5, 4,
+
+  8, 8, 1.666, 8, 8, 8, 8, 1.666, 4,
+  8, 8, 1.666, 8, 8, 8, 1.666, 8,
+  8, 8, 8, 2, 8, 8, 8, 2, 4,
+  8, 8, 1, 4, 4, 8, 2.666, 2, 4,
+};
+
+#define sensor_pin A0 //设置光照检测
+#define  sensorPin  6  //设置人体红外
+#define buzzer_pin 4  //
+#include <avr/sleep.h>
+
+int pin2 = 2;  //设置触摸开关
+int state;
+int state1;
+int pushButton =2;
+void pin2Interrupt(void) {
+    /* 中断唤醒 */
+ 
+    /*当中断引脚为低电平时关闭中断*/
+    Serial.println("wake up!!!");
+    detachInterrupt(0);
+}
+ 
+/***************************************************
+ *  Name:        enterSleep
+ *  Returns:     Nothing.
+ *  Parameters:  None.
+ *  Description: Enters the arduino into sleep mode.
+ ***************************************************/
+void enterSleep(void) {
+
+    attachInterrupt(0, pin2Interrupt, LOW);
+    delay(100);
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    sleep_enable();
+    sleep_mode();
+    sleep_disable();
+}
+ 
+/***************************************************
+ *  Name:        setup
+ *  Returns:     Nothing.
+ *  Parameters:  None.
+ *  Description: Setup for the Arduino.           
+ ***************************************************/
+void setup() {
+    Serial.begin(9600);
+    /* Setup the pin direction. */
+    pinMode(pin2, INPUT);
+    Serial.println("Initialisation complete.");
+  pinMode(sensorPin, INPUT);
+  pinMode(sensor_pin,INPUT);
+  Serial.begin(9600);
+  pinMode(buzzer_pin,OUTPUT);
+   pinMode(pushButton, INPUT);
+}
+void loop()
+{
+
+  state = digitalRead(sensorPin);
+  state1=analogRead(sensor_pin);
+  if ((state == 1)&&(state1>300))   //检测到人体红外且光照强度大于300时
+ {
+    Serial.println("Somebody is in this area!");
+   
+   for (int thisNote = 0; thisNote < 500; thisNote++)  //蜂鸣器"传邮万里"校歌播放
+  {
+    int noteDuration = 2000 / noteDurations[thisNote];
+    tone(buzzer_pin, song[thisNote], noteDuration);
+    int pauseBetweenNotes = noteDuration + 50;
+    delay(noteDuration);
+    noTone(buzzer_pin);
+      int buttonState = digitalRead(pushButton);
+      Serial.println(buttonState);
+      if(buttonState == 0){       //触摸开关被触发时
+        Serial.println("Entering sleep");
+        enterSleep();
+      }
+     
+   }
+  delay(10000); 
+
+
+}
+else    //检测不到人体红外或光照强度小于300时
+ {
+  Serial.println("No one!");
+  delay(1000);
+  }
+
+delay(600000); //延迟十分钟设置
+}
