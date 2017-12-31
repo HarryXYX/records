@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/detail/detail",
+    "pages/setting/setting",
+    "pages/start/start",
+    "pages/wifi_station/tianqi/tianqi"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#043567",
+    "navigationBarBackgroundColor": "#043567",
+    "navigationBarTitleText": "生活小助手",
+    "navigationBarTextStyle": "#ffffff"
+  }
+}
